@@ -74,5 +74,29 @@ namespace Proyecto_PrograWeb_Team1.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        
+        // PATCH /api/denuncia/{id}/assign-mediator — Admin asigna mediador
+        [HttpPatch("{id}/assign-mediator")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> AssignMediator(string id, [FromBody] AssignMediatorDto dto)
+        {
+            try
+            {
+                var denuncia = await _denunciaService.AssignMediator(id, dto.MediatorId, dto.MediatorName);
+                return Ok(new
+                {
+                    denuncia.Id,
+                    denuncia.Title,
+                    denuncia.Status,
+                    denuncia.MediatorId,
+                    denuncia.MediatorName,
+                    message = $"Mediador {dto.MediatorName} asignado al caso correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

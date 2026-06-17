@@ -76,6 +76,8 @@ namespace Proyecto_PrograWeb_Team1.Services;
                 {"Categoria", denuncia.Categoria},
                 { "CreatedAt", denuncia.CreatedAt },
                 {"User-report", denuncia.Userreport },
+                { "MediatorId", null! },
+                { "MediatorName", null! },
             });
         return denuncia;
     }
@@ -103,7 +105,9 @@ namespace Proyecto_PrograWeb_Team1.Services;
                 UserId = data["UserId"].ToString()!,
                 Categoria = data["Categoria"].ToString()!,
                 CreatedAt = ((Google.Cloud.Firestore.Timestamp)data["CreatedAt"]).ToDateTime(),
-                Userreport = data["User-report"].ToString()!
+                Userreport = data["User-report"].ToString()!,
+                MediatorId = data.ContainsKey("MediatorId") ? data["MediatorId"]?.ToString() : null,
+                MediatorName = data.ContainsKey("MediatorName") ? data["MediatorName"]?.ToString() : null
             });
         }
         return denuncia;
@@ -131,10 +135,52 @@ namespace Proyecto_PrograWeb_Team1.Services;
                 UserId = data["UserId"].ToString()!,
                 Categoria = data["Categoria"].ToString()!,
                 CreatedAt = ((Google.Cloud.Firestore.Timestamp)data["CreatedAt"]).ToDateTime(),
-                Userreport = data ["User-report"].ToString()!
+                Userreport = data ["User-report"].ToString()!,
+                MediatorId = data.ContainsKey("MediatorId") ? data["MediatorId"]?.ToString() : null,
+                MediatorName = data.ContainsKey("MediatorName") ? data["MediatorName"]?.ToString() : null
             });
         }
         return denuncia;
+    }
+
+    public async Task<Denuncia> AssignMediator(string caseId, string mediatorId, string mediatorName)
+    {
+        var docRef = _firebaseService.GetCollection("denuncia").Document(caseId);
+        var doc = await docRef.GetSnapshotAsync();
+
+        if (!doc.Exists)
+            throw new Exception("Caso no encontrado");
+
+        var data = doc.ToDictionary();
+        var currentStatus = data["Status"].ToString()!;
+
+        // No se puede asignar mediador a un caso ya cerrado
+        if (currentStatus == "Completado" || currentStatus == "Cerradosinacuerdo")
+            throw new Exception("No se puede asignar mediador a un caso cerrado");
+
+        await docRef.UpdateAsync(new Dictionary<string, object>
+        {
+            { "MediatorId", mediatorId },
+            { "MediatorName", mediatorName },
+            { "Status", "Mediacion" }
+        });
+
+        var updated = await docRef.GetSnapshotAsync();
+        var updatedData = updated.ToDictionary();
+        return new Denuncia
+        {
+            Id = updatedData["Id"].ToString()!,
+            Title = updatedData["Title"].ToString()!,
+            Status = updatedData["Status"].ToString()!,
+            Comment = updatedData["Comment"].ToString()!,
+            Success = (bool)updatedData["Success"],
+            UserId = updatedData["UserId"].ToString()!,
+            Categoria = updatedData["Categoria"].ToString()!,
+            CreatedAt = ((Google.Cloud.Firestore.Timestamp)updatedData["CreatedAt"]).ToDateTime(),
+            Userreport = updatedData["User-report"].ToString()!,
+            MediatorId = updatedData.ContainsKey("MediatorId") ? updatedData["MediatorId"]?.ToString() : null,
+            MediatorName = updatedData.ContainsKey("MediatorName") ? updatedData["MediatorName"]?.ToString() : null
+        };
     }
     
 }

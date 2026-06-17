@@ -16,6 +16,11 @@ builder.Services.AddSingleton<FirebaseService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DenunciaServices>();
 builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<MediatorService>();
+builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<AgreementService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<MailService>();

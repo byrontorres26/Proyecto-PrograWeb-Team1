@@ -30,7 +30,11 @@ public class Denuncia
     
     public string Userreport { get; set; } = string.Empty;
     
+    // Mediador asignado al caso
+    public string? MediatorId { get; set; }
     
+    // Nombre del mediador asignado
+    public string? MediatorName { get; set; }
     
 }
 
