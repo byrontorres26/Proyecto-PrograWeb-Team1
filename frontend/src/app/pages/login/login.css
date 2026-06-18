@@ -1,0 +1,33 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* 100vh toda la altura de la pantalla*/
+}
+
+/* Darle un ancho fijo */
+mat-card {
+  width: 400px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+mat-card-header{
+    margin-bottom: 10px;
+}
+
+mat-form-field{
+    width: 100%;
+}
+
+mat-card-title{
+   font-family: "Lexend", sans-serif;
+   margin-bottom: 20 px;   
+}
+
+.form-container{
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
