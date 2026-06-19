@@ -67,7 +67,11 @@ public class AgreementService
                 { "Points", agreement.Points.Select(p => new Dictionary<string, object>
                 {
                     { "Description", p.Description },
-                    { "Deadline", p.Deadline },
+                    { "Deadline", Timestamp.FromDateTime(
+                    DateTime.SpecifyKind(
+                        p.Deadline,
+                        DateTimeKind.Utc))
+                },
                     { "ComplianceStatus", p.ComplianceStatus },
                     { "ReportedBy", null! },
                     { "ComplianceReportedAt", null! }
@@ -128,10 +132,22 @@ public class AgreementService
             throw new Exception("El acuerdo ya está formalizado y no se puede modificar");
 
         var reporterId = data["ReporterId"].ToString()!;
-        var respondentId = data["RespondentId"].ToString()!;
+    
+    //ESTA PARTE DE ACA LO QUE HACE ES QUE SACA EL NOMBRE Y EL ID, PQ SOLO PIDE EL ID PA REPORTAR
+    var respondentId = data["RespondentId"].ToString()!;
 
-        var isReporter = userId == reporterId;
-        var isRespondent = userId == respondentId;
+    var userDoc = await _firebaseService
+    .GetCollection("users")
+    .Document(userId)
+    .GetSnapshotAsync();
+
+    var fullName = userDoc
+    .ToDictionary()["FullName"]
+    .ToString();
+
+    var isReporter = userId == reporterId;
+        var isRespondent = fullName == respondentId;
+
 
         if (!isReporter && !isRespondent)
             throw new Exception("No eres parte de este acuerdo");

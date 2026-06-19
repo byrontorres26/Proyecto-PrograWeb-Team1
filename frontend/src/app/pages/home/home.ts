@@ -15,6 +15,7 @@ import { LoginResponse } from '../../models/user.model';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { NotificationService } from '../../services/notification.service';
+import { AgreementService } from '../../services/agreement.service';
 
 
 
@@ -40,9 +41,12 @@ export class HomeComponent implements OnInit{
 
   notifications: any[] = [];
   totalNotifications = 0;
+  mostrarAcuerdo = false;
+  acuerdoActual: any = null;
 
   constructor(
-  private notificationService: NotificationService
+  private notificationService: NotificationService,
+  private agreementService: AgreementService
 ) {}
 
 cargarNotificaciones(): void {
@@ -68,6 +72,59 @@ cargarNotificaciones(): void {
   });
 
 }
+
+abrirAcuerdo(id: string): void {
+
+  this.agreementService
+    .getById(id)
+    .subscribe({
+
+      next: (data) => {
+
+        this.acuerdoActual = data;
+
+        this.mostrarAcuerdo = true;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+
+confirmarAcuerdo(id: string): void {
+
+  this.agreementService
+    .confirm(id)
+    .subscribe({
+
+      next: (response: any) => {
+
+        alert(response.message);
+
+        this.mostrarAcuerdo = false;
+
+        this.cargarNotificaciones();
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+
+
+
 
 ngOnInit(): void {
   

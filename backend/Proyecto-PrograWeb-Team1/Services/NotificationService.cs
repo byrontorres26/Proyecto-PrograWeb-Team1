@@ -15,6 +15,7 @@ public class NotificationService
         string userId,
         string role)
     {
+        
         var notifications = new List<object>();
 
         var userDoc = await _firebaseService
@@ -78,8 +79,37 @@ public class NotificationService
                         : null
                 });
             }
-        }
 
-        return notifications;
-    }
+
+        //ESTO EN PRINCIPIO NO DEBERIA IR... LO QUE HACE ES QUE DEJA QUE SE PUEDA VER
+        //SI HAY AGREEMENT PENIENTES 
+
+    var agreementsSnapshot = await _firebaseService
+        .GetCollection("agreements")
+        .WhereEqualTo("RespondentId", fullName)
+        .GetSnapshotAsync();
+        foreach (var agreement in agreementsSnapshot.Documents)
+        {
+            var agreementData = agreement.ToDictionary();
+
+            if (
+                agreementData.ContainsKey("ConfirmedByRespondent") &&
+                (bool)agreementData["ConfirmedByRespondent"]
+            )
+            {
+                continue;
+            }
+
+            notifications.Add(new
+            {
+                type = "agreement",
+                agreementId = agreementData["Id"].ToString(),
+                title = "Tienes un acuerdo pendiente",
+                status = agreementData["Status"].ToString()
+            });
+        }
+                }
+
+                return notifications;
+            }
 }
