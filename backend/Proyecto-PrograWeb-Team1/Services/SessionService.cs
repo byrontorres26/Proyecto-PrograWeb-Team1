@@ -20,7 +20,7 @@ public class SessionService
             Id = Guid.NewGuid().ToString(),
             CaseId = dto.CaseId,
             MediatorId = mediatorId,
-            ScheduledDate = dto.ScheduledDate,
+            ScheduledDate = DateTime.Parse(dto.ScheduledDate).ToUniversalTime(),
             Modality = dto.Modality,
             MeetingLink = dto.Modality == "virtual" ? dto.MeetingLink : null,
             Status = "programada",

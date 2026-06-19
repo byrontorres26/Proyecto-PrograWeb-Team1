@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +29,7 @@ input[matInput] {
   padding: 5px;
 }
 
-.login-card {
+.register-card {
   max-width: 400px;
   margin: 50px auto;
   box-shadow: 0 4px 20px rgba(0,0,0,.3) !important;
@@ -43,7 +43,7 @@ flex-direction: column;
 gap: 16px;
 }
 
-.login-button {
+.register-button {
   justify-content: center;
   width: 100%;
   background-color: #559CF8 !important;

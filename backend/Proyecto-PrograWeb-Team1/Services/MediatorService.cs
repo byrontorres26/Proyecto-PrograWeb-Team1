@@ -1,4 +1,5 @@
 using Google.Cloud.Firestore;
+using Google.Protobuf.WellKnownTypes;
 using Proyecto_PrograWeb_Team1.DTOs;
 using Proyecto_PrograWeb_Team1.Models;
 
@@ -24,9 +25,31 @@ public class MediatorService
         if (existing.Count > 0)
             throw new Exception("Ya existe un mediador con ese correo");
 
+        //Validacion pa evitar otra vez que el usuario suba cosas vacias
+        if (string.IsNullOrWhiteSpace(dto.FullName))
+        {
+        throw new Exception("El nombre es obligatorio");
+        }
+        if (string.IsNullOrWhiteSpace(dto.Email))
+        {
+        throw new Exception("El email es obligatorio");
+        }
+
+        // LOGICA DEL AUTH SERVICE
+        var usersCollection = _firebaseService.GetCollection("users");
+
+        var password = "Temporal123";
+
+        var userId = Guid.NewGuid().ToString();
+
+        var passwordHash =
+        Convert.ToBase64String(
+        System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(password)));
+
         var mediator = new Mediator
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = userId,
             FullName = dto.FullName,
             Email = dto.Email,
             Zone = dto.Zone,
@@ -36,6 +59,20 @@ public class MediatorService
             ActiveCasesCount = 0,
             CreatedAt = DateTime.UtcNow
         };
+        
+        //basicamente esto de aca es la coleccion de usuarios lo deje conectado tipo dos colecciones pa que se guarden en el mismo la
+        //solo que se va a sincronizar con esta coleccion pa su informacion
+
+        await usersCollection.Document(userId).SetAsync(
+         new Dictionary<string, object>
+         {
+        { "Id", userId },
+        { "FullName", dto.FullName },
+        { "Email", dto.Email },
+        { "PasswordHash", passwordHash },
+        { "Role", "mediator" },
+        { "CreatedAt", DateTime.UtcNow }
+        });
 
         await collection.Document(mediator.Id).SetAsync(new Dictionary<string, object>
         {
@@ -46,13 +83,14 @@ public class MediatorService
             { "Specialty", mediator.Specialty },
             { "Availability", mediator.Availability },
             { "IsActive", mediator.IsActive },
-            { "UserId", null! },
+            { "UserId", userId },
             { "ActiveCasesCount", mediator.ActiveCasesCount },
             { "CreatedAt", mediator.CreatedAt }
         });
 
         return mediator;
     }
+
 
     public async Task<List<Mediator>> GetAll(bool includeInactive = false)
     {
@@ -72,6 +110,7 @@ public class MediatorService
         return mediators;
     }
 
+    //BUSCA MEDIADORES NO CASOS XD
     public async Task<Mediator> GetById(string id)
     {
         var doc = await _firebaseService.GetCollection("mediators")

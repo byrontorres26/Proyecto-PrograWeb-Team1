@@ -3,18 +3,27 @@
         <mat-card-header>
             <mat-card-title>Iniciar sesion</mat-card-title>
         </mat-card-header>
-        <mat-card-content>
- 
+        <mat-card-content> 
             <mat-form-field appearance="outline">
                 <mat-label>Correo:</mat-label>
                 <input matInput [(ngModel)]="email">
             </mat-form-field>
-
             <mat-form-field appearance="outline">
                 <mat-label>Contraseña:</mat-label>
-                <input matInput [(ngModel)]="password">
+                <input matInput type="password" [(ngModel)]="password" placeholder="********"/>
             </mat-form-field>
- 
-        </mat-card-content>
+                    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+        
+            <mat-card-actions>
+      <button class="login-button" mat-raised-button (click)="onLogin()" [disabled]="isLoading">
+        {{ isLoading ? 'Entrando...' : 'Iniciar Sesion' }}
+      </button>
+       </mat-card-actions>
+      <a routerLink="/register">¿No tienes cuenta? Registrate</a>
+      
+   
+
+    </mat-card-content>
     </mat-card>
+    
 </div>

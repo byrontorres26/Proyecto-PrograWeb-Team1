@@ -88,6 +88,7 @@ public class AuthService
             // Int64, necesitamos convertirlo
             CreatedAt = ((Google.Cloud.Firestore.Timestamp)data["CreatedAt"]).ToDateTime()
         };
+        
 
         // Verificar si la contraseña esta hasheada
         if (!VerifyPassword(dto.Password, user.PasswordHash))
@@ -97,7 +98,7 @@ public class AuthService
         return GenerateToken(user);
 
     }
-
+        
     private string GenerateToken(User user)
     {
         // El token lleva cierta informacion, Id, Email y Role del usuario que hizo login
