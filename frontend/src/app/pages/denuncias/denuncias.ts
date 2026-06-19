@@ -15,7 +15,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { DenunciaService } from '../../services/denuncia.service';
 import { MatSelectModule } from '@angular/material/select';
-
+import { AgreementService } from '../../services/agreement.service';
+import { Denuncia } from '../../models/denuncia.model';
 
 @Component({
   selector: 'app-denuncias',
@@ -44,7 +45,9 @@ export class DenunciasComponent {
   comment = '';
   categoria = '';
   userreport = '';
-
+  mostrarAcuerdo = false;
+  acuerdos: any[] = [];
+  acuerdoSeleccionado: any = null;
   isLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -58,12 +61,12 @@ export class DenunciasComponent {
 ];
 
   constructor(
-    private denunciaService: DenunciaService
+    private denunciaService: DenunciaService,
+    private agreementService: AgreementService
   ) {}
 
   denuncias: any[] = [];
   mostrarFormulario = false;
-
 
   cargarDenuncias(): void {
 
@@ -134,5 +137,55 @@ export class DenunciasComponent {
       }
 
     });
+
   }
+  abrirAcuerdo(denuncia: Denuncia): void {
+
+  this.agreementService
+    .getByCase(denuncia.id!)
+    .subscribe({
+
+      next: (data: any) => {
+
+      this.acuerdos = data as any[];
+
+      this.mostrarAcuerdo = true;
+
+    },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
+
+confirmarAcuerdo(id: string): void {
+
+  this.agreementService
+    .confirm(id)
+    .subscribe({
+
+  next: (response: any) => {
+
+    alert(response.message);
+
+    this.mostrarAcuerdo = false;
+
+    this.cargarDenuncias();
+
+  },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+
+}
 }

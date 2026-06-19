@@ -86,7 +86,14 @@
         </p>
 
       </mat-card-content>
+      <button
+  mat-raised-button
+  class="button"
+  (click)="abrirAcuerdo(denuncia)">
 
+  Ver Acuerdo
+
+</button>
     </mat-card>
 
     <br>
@@ -103,7 +110,7 @@
 
 
   </button>
-
+  
 </mat-card>
 
 <div class="overlay" *ngIf="mostrarFormulario">
@@ -161,10 +168,40 @@
       </button>
       <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
       <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
-        
-
-   
-
   </mat-card>
+</div>
 
+<!--POPUP PARA ACUERDO-->
+<div class="overlay" *ngIf="mostrarAcuerdo">
+
+  <mat-card class="popup">
+
+    <h2>Acuerdo</h2>
+    <div *ngFor="let acuerdo of acuerdos">
+      <p>
+        <strong>Estado:</strong>
+        {{ acuerdo.status }}
+      </p>
+      <p>
+        {{ acuerdo.agreementText }}
+      </p>
+
+      <div *ngFor="let punto of acuerdo.points">
+        <p>
+          Acuerdo: {{ punto.description }}
+        </p>
+      </div>
+      <button
+        mat-raised-button
+        class="button"
+        (click)="confirmarAcuerdo(acuerdo.id)">
+        Confirmar Acuerdo
+      </button>
+    </div>
+    <button
+      mat-button
+      (click)="mostrarAcuerdo = false">
+      Cerrar
+    </button>
+  </mat-card>
 </div>

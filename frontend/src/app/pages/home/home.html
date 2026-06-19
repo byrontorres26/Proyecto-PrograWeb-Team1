@@ -63,10 +63,64 @@
       {{ n.meetingLink }}
     </p>
     <hr>
+          <div *ngIf="n.type === 'agreement'">
+
+  <button
+    mat-raised-button class="buton"
+    (click)="abrirAcuerdo(n.agreementId)">
+
+    Ver Acuerdo
+
+  </button>
+
+</div>
   </div>
 
 </mat-card>
 
+<div
+  class="overlay"
+  *ngIf="mostrarAcuerdo">
+
+  <mat-card class="popup">
+
+    <h2>Acuerdo</h2>
+
+    <p>
+
+      {{ acuerdoActual?.agreementText }}
+
+    </p>
+
+    <div *ngFor="let punto of acuerdoActual?.points">
+
+      <p>
+
+        Descrpicion: {{ punto.description }}
+
+      </p>
+
+    </div>
+
+    <button
+      mat-raised-button class="buton"
+      (click)="confirmarAcuerdo(acuerdoActual.id)">
+
+      Aceptar Acuerdo
+
+    </button>
+
+    <button
+      mat-button class="button"
+      (click)="mostrarAcuerdo = false">
+
+      Cerrar
+
+    </button>
+
+  </mat-card>
+
+</div>
 
 
 

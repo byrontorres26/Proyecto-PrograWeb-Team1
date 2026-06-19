@@ -13,6 +13,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { SessionService } from '../../services/sesion.service';
+import { AgreementService } from '../../services/agreement.service';
+
 
 @Component({
   selector: 'app-miscasos',
@@ -42,10 +44,16 @@ export class MiscasosComponent implements OnInit {
   scheduledDate = '';
   modality = '';
   meetingLink = '';
+  agreementText = '';
+  pointDescription = '';
+  pointDeadline = '';
+  mostrarAcuerdo = false;
 
   constructor(
     private denunciaService: DenunciaService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private agreementService: AgreementService
+    
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +88,51 @@ export class MiscasosComponent implements OnInit {
       }
     });
   }
+
+  crearAcuerdo(): void {
+
+  if (!this.casoSeleccionado) {
+    return;
+  }
+
+  const agreement = {
+
+    caseId: this.casoSeleccionado.id,
+
+    agreementText: this.agreementText,
+
+    points: [
+      {
+        description: this.pointDescription,
+        deadline: this.pointDeadline
+      }
+    ]
+  };
+
+  this.agreementService.create(agreement)
+    .subscribe({
+
+      next: () => {
+
+        alert('Acuerdo creado');
+
+        this.mostrarAcuerdo = false;
+
+        this.agreementText = '';
+        this.pointDescription = '';
+        this.pointDeadline = '';
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+      }
+
+    });
+}
+
 
   programarSesion(denuncia: Denuncia): void {
 

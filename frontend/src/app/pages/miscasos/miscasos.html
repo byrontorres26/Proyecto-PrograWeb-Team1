@@ -38,6 +38,7 @@
       Mis Casos Asignados
     </mat-card-title>
   </mat-card-header>
+   <p></p>
   <button
     mat-raised-button
     class="button"
@@ -49,6 +50,8 @@
     {{ errorMessage }}
   </div>
   <div *ngFor="let denuncia of denuncias">
+
+    <!--POP UP PARA PROGRAMAR SESION-->
     <mat-card class="denuncia-card">
       <mat-card-header>
         <mat-card-title>
@@ -85,59 +88,87 @@
         Programar Sesión
 
         </button>
+        <p></p>
+        <button class = "button"
+        mat-raised-button
+        (click)="casoSeleccionado = denuncia; mostrarAcuerdo = true">
+
+        Crear Acuerdo
+
+        </button>
       </mat-card-content>
     </mat-card>
     <br>
   </div>
 </mat-card>
 
+<!--POPUP SESION-->
 <div class="overlay" *ngIf="mostrarSesion">
-
   <mat-card class="popup">
-
     <h2>Programar Sesión</h2>
-
     <p>
       <strong>Caso:</strong>
       {{ casoSeleccionado?.title }}
     </p>
-
     <div class="form">
-
       <input
         type="datetime-local"
         [(ngModel)]="scheduledDate">
-
       <mat-form-field appearance="outline">
-
         <mat-label>Modalidad</mat-label>
-
         <mat-select [(ngModel)]="modality">
-
           <mat-option value="presencial">
             Presencial
           </mat-option>
-
           <mat-option value="virtual">
             Virtual
           </mat-option>
-
         </mat-select>
-
       </mat-form-field>
-
       <input
         *ngIf="modality === 'virtual'"
         type="text"
         placeholder="Link de Google Meet"
         [(ngModel)]="meetingLink">
-
     </div>
-
     <button
       mat-button
       class="cancel"
       (click)="cerrarSesion()">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      class="acciones"
+      (click)="crearSesion()">
+      Guardar
+    </button>
+  </mat-card>
+</div>
+  <!---POP UP PARA MOSTRAR ACUERDO-->>
+  <div class="overlay" *ngIf="mostrarAcuerdo">
+
+  <mat-card class="popup">
+
+    <h2>Crear Acuerdo</h2>
+
+    <input
+      placeholder="Titulo"
+      [(ngModel)]="agreementText">
+    
+    <textarea
+      placeholder="Descripcion"
+      [(ngModel)]="pointDescription">
+    </textarea>
+
+    <input
+      type="datetime-local"
+      [(ngModel)]="pointDeadline">
+  
+      <button
+      mat-button
+      class="cancel"
+      (click)="mostrarAcuerdo = false">
 
       Cancelar
 
@@ -146,12 +177,13 @@
     <button
       mat-raised-button
       class="acciones"
-      (click)="crearSesion()">
+      (click)="crearAcuerdo()">
 
-      Guardar
+      Crear Acuerdo
 
     </button>
 
   </mat-card>
+  
 
 </div>
