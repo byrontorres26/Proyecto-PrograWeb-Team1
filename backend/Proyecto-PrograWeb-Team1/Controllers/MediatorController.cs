@@ -59,20 +59,6 @@ public class MediatorController : ControllerBase
         }
     }
 
-    // GET /api/mediator/{id} — Admin o el propio mediador
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
-    {
-        try
-        {
-            var mediator = await _mediatorService.GetById(id);
-            return Ok(mediator);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
 
     // PUT /api/mediator/{id} — Solo admin edita mediador
     [HttpPut("{id}")]

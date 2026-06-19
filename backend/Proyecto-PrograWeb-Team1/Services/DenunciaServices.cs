@@ -112,6 +112,37 @@ namespace Proyecto_PrograWeb_Team1.Services;
         }
         return denuncia;
     }
+
+        public async Task<List<Denuncia>> GetByMediator(string mediatorId)
+    {
+        // Solo van a extraer las denuncias del usuarios que hace login
+        var snapshot = await _firebaseService.GetCollection("denuncia")
+            .WhereEqualTo("MediatorId", mediatorId)
+            .GetSnapshotAsync();
+        
+        var denuncia = new List<Denuncia>();
+        
+        foreach (var doc in snapshot.Documents)
+        {
+            var data = doc.ToDictionary();
+
+            denuncia.Add(new Denuncia
+            {
+                Id = data["Id"].ToString()!,
+                Title = data["Title"].ToString()!,
+                Status = data["Status"].ToString()!,
+                Comment = data["Comment"].ToString()!,
+                Success = (bool)data["Success"],
+                UserId = data["UserId"].ToString()!,
+                Categoria = data["Categoria"].ToString()!,
+                CreatedAt = ((Google.Cloud.Firestore.Timestamp)data["CreatedAt"]).ToDateTime(),
+                Userreport = data["User-report"].ToString()!,
+                MediatorId = data.ContainsKey("MediatorId") ? data["MediatorId"]?.ToString() : null,
+                MediatorName = data.ContainsKey("MediatorName") ? data["MediatorName"]?.ToString() : null
+            });
+        }
+        return denuncia;
+    }
     
     public async Task<List<Denuncia>> GetAll()
     {

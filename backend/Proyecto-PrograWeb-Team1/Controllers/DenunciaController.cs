@@ -60,7 +60,7 @@ namespace Proyecto_PrograWeb_Team1.Controllers
         }
         
         [HttpGet("all")]
-        [Authorize (Roles = "admin, guardia")]
+        [Authorize (Roles = "admin, mediator")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -74,7 +74,23 @@ namespace Proyecto_PrograWeb_Team1.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        //PARA QUE EL MEDIADOR PUEDA VER LOS CASOS
+        [HttpGet("my-cases")]
+        [Authorize(Roles = "mediator")]
+        public async Task<IActionResult> GetMyCases()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized();
+
+            var denuncias =
+                await _denunciaService.GetByMediator(userId);
+
+            return Ok(denuncias);
+        }
         
+
         // PATCH /api/denuncia/{id}/assign-mediator — Admin asigna mediador
         [HttpPatch("{id}/assign-mediator")]
         [Authorize(Roles = "admin")]

@@ -10,7 +10,7 @@ import {LoginResponse, RegisterResponse} from '../models/user.model';
 })
 export class AuthService {
   // La URL base del backend, si cambia el puerto, cambiarlo aqui
-  private apiUrl = ' http://localhost:5262/api/Auth';
+  private apiUrl = ' http://localhost:5224/api/Auth';
 
   // HttpClient es un servicio de Angular para hacer http requests
   // Inyeccion de dependencias...
@@ -34,6 +34,46 @@ export class AuthService {
       password
     });
   }
+  //leer el token en JSON
+  getPayload(): any | null {
+  const token = this.getToken();
+
+  if (!token) return null;
+
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}  
+
+getRole(): string | null {
+  const payload = this.getPayload();
+
+  return (
+    payload?.role ||
+    payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+    null
+  );
+}
+
+getUserId(): string | null {
+  const payload = this.getPayload();
+
+  return (
+    payload?.nameid ||
+    payload?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
+    null
+  );
+}
+
+getEmail(): string | null {
+  const payload = this.getPayload();
+
+  return payload?.[
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+  ] ?? null;
+}
 
   // Guardar el token en localStorage para que no se pierda el recargar la pagina
   saveToken(token: string): void {
